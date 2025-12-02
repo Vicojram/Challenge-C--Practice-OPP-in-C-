@@ -58,33 +58,32 @@ int main(){
     cout << "Welcome, " << player.getName() << "! HP: " << player.getHp() << " ATK: " << player.getAttack() << endl;
 
     for (int i = 1; i < ROOMS + 1; i++) {
-        Monster enemy;
-        enemy.setName(to_string(i));
+        Room dungeon(i);
+        Monster& enemy = dungeon.getEnemy();
 
-        cout << "=== Entering Room " << to_string(i) << " === \n";
-        
-        cout << "A " << enemy.getName() << " appears! (HP: " << enemy.getHp() << ", ATK: " << enemy.getAttack() << ") \n";
+        dungeon.dungeonSetup(i);
 
-        while (player.getAlive() == true) {
+        while (dungeon.getCleared() != true) {
             enemy.takeDamage(player.getAttack());
             cout << player.getName() << " attacks " << enemy.getName() << " for " << player.getAttack() << ". (" << enemy.getHp() << " HP left) \n";
-            if (enemy.getAlive() == false) {
+
+            if (dungeon.checkClear()) {
                 cout << "Monster defeated! " << player.getName() << " has " << player.getHp() << " HP left. \n";
+                dungeon.setCleared(true);
                 break;
             }
+
             player.takeDamage(enemy.getAttack());
             cout << enemy.getName() << " attacks " << player.getName() << " for " << enemy.getAttack() << ". (" << player.getHp() << " HP left) \n";
-        }
 
-        if (player.getAlive() == false) {
-            cout << "=== GAME OVER ===";
-            break;
+            if (player.getHp() <= 0) {
+                break;
+            }
         }
-
+        if (player.getHp() <= 0) {
+                cout << "=== GAME OVER ===";
+                break;
+            }
     }
-
-    
-
-
     return 0;
 }
